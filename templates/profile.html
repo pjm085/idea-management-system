@@ -1,0 +1,408 @@
+{% extends "app_base.html" %}
+{% block title %}
+  Profile - JO! THE HELPER
+{% endblock %}
+{% block app_content %}
+  <div class="profile-page">
+    <header class="profile-page-header">
+      <p class="profile-eyebrow">YOUR WORKSPACE / ACCOUNT</p>
+      <h1>Profile</h1>
+      <p>Manage your account and personal details.</p>
+    </header>
+    {% set profile_messages = get_flashed_messages(with_categories=true) %}
+    {% if profile_messages %}
+      <div class="profile-flash-list" aria-live="polite">
+        {% for category, message in profile_messages if category != 'password_error' %}
+          <div
+            class="profile-flash {{ 'is-error' if category == 'error' else 'is-success' }}"
+            role="status"
+          >
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+    <section class="profile-card profile-account-card">
+      <div class="profile-summary">
+        <div class="profile-avatar profile-avatar-large">
+          <span>{{ (user["name"] or "U")[0]|upper }}</span>
+        </div>
+        <div class="profile-summary-details">
+          <p class="profile-eyebrow">PERSONAL WORKSPACE</p>
+          <h2>{{ user["name"] }}</h2>
+          <p>{{ user["email"] }}</p>
+          <span>Member since {{ member_since }}</span>
+        </div>
+        <button
+          type="button"
+          class="profile-button"
+          id="edit-profile-toggle"
+          aria-expanded="false"
+          aria-controls="profile-edit-panel"
+        >
+          <i class="ri-user-settings-line" aria-hidden="true"></i>
+          Edit profile
+        </button>
+      </div>
+      <div class="profile-edit-panel" id="profile-edit-panel" hidden>
+        <div class="profile-panel-heading">
+          <h3>Edit profile</h3>
+          <p>Update your account details.</p>
+        </div>
+        <form id="profile-details-form" action="{{ url_for('update_profile') }}" method="post">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+          <div class="profile-form-grid">
+            <div class="profile-field">
+              <label for="profile-name">Full name</label>
+              <input
+                id="profile-name"
+                name="name"
+                type="text"
+                value="{{ user['name'] }}"
+                maxlength="24"
+                autocomplete="name"
+                aria-describedby="profile-name-hint"
+                required
+              />
+              <small class="profile-field-hint" id="profile-name-hint">Up to 24 characters.</small>
+            </div>
+            <div class="profile-field">
+              <label for="profile-email">Email address</label>
+              <input
+                id="profile-email"
+                name="email"
+                type="email"
+                value="{{ user['email'] }}"
+                maxlength="254"
+                autocomplete="email"
+                required
+              />
+            </div>
+          </div>
+          <div class="profile-form-actions">
+            <button
+              type="button"
+              class="profile-button profile-button-secondary"
+              id="cancel-profile-edit"
+            >
+              Cancel
+            </button>
+            <button type="submit" class="profile-button">Save changes</button>
+          </div>
+        </form>
+      </div>
+    </section>
+    <section class="profile-stat-grid">
+      <article class="profile-stat-card stat-projects">
+        <p>Total projects</p>
+        <strong>{{ profile_counts['projects'] }}</strong>
+      </article>
+      <article class="profile-stat-card stat-ideas">
+        <p>Active ideas</p>
+        <strong>{{ profile_counts['ideas'] }}</strong>
+      </article>
+      <article class="profile-stat-card stat-unorganised">
+        <p>Unorganised ideas</p>
+        <strong>{{ profile_counts['unorganised'] }}</strong>
+      </article>
+    </section>
+    <section class="profile-card profile-section-card" id="change-password">
+      <button
+        type="button"
+        class="profile-accordion-toggle"
+        id="change-password-toggle"
+        aria-expanded="false"
+        aria-controls="change-password-panel"
+      >
+        <span class="profile-accordion-copy">
+          <span class="profile-accordion-title">Change password</span>
+        </span>
+        <i class="ri-arrow-down-s-line" aria-hidden="true"></i>
+      </button>
+      <div class="profile-accordion-panel" id="change-password-panel" hidden>
+        {% for category, message in profile_messages if category == 'password_error' %}
+          <div class="profile-flash is-error" role="alert" tabindex="-1">{{ message }}</div>
+        {% endfor %}
+        <p class="profile-accordion-panel-description">
+          Use your current password to set a new one.
+        </p>
+        <form action="{{ url_for('change_password') }}" method="post" class="profile-form">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+          <div class="profile-form-grid">
+            <div class="profile-field profile-field-full">
+              <label for="current-password">Current password</label>
+              <input
+                id="current-password"
+                name="current_password"
+                type="password"
+                autocomplete="current-password"
+                required
+              />
+            </div>
+            <div class="profile-field">
+              <label for="new-password">New password</label>
+              <input
+                id="new-password"
+                name="new_password"
+                type="password"
+                minlength="6"
+                maxlength="128"
+                autocomplete="new-password"
+                required
+              />
+            </div>
+            <div class="profile-field">
+              <label for="confirm-password">Confirm new password</label>
+              <input
+                id="confirm-password"
+                name="confirm_password"
+                type="password"
+                minlength="6"
+                maxlength="128"
+                autocomplete="new-password"
+                required
+              />
+            </div>
+          </div>
+          <div class="profile-form-actions">
+            <button type="submit" class="profile-button">Update password</button>
+          </div>
+        </form>
+      </div>
+    </section>
+    <div class="profile-management-grid" id="categories-tags">
+      <section class="profile-card profile-section-card">
+        <div class="profile-section-heading">
+          <div>
+            <h2>Categories</h2>
+            <p>Organize ideas by category. Category colors are not editable in V1.</p>
+          </div>
+          <i class="ri-price-tag-3-line" aria-hidden="true"></i>
+        </div>
+        <form
+          class="taxonomy-create-form"
+          method="post"
+          action="{{ url_for('features.create_category') }}"
+        >
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+          <label for="new-category-name">Category name</label>
+          <div class="taxonomy-add-row">
+            <input
+              id="new-category-name"
+              name="name"
+              type="text"
+              maxlength="60"
+              placeholder="e.g. Story ideas"
+              required
+            /><button class="profile-button" type="submit">Add category</button>
+          </div>
+        </form>
+        {% if categories %}
+          <div class="taxonomy-list taxonomy-scroll-list">
+            {% for category in categories %}
+              <div class="taxonomy-row">
+                <form
+                  method="post"
+                  action="{{ url_for('features.rename_category', category_id=category['id']) }}"
+                >
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token }}" /><label
+                    class="visually-hidden"
+                    for="category-name-{{ category['id'] }}"
+                    >Rename {{ category['name'] }}</label
+                  ><input
+                    id="category-name-{{ category['id'] }}"
+                    name="name"
+                    value="{{ category['name'] }}"
+                    maxlength="60"
+                    required
+                  /><span class="taxonomy-count">{{ category['idea_count'] }} ideas</span
+                  ><button
+                    class="profile-text-button"
+                    type="submit"
+                    aria-label="Save category name"
+                  >
+                    Save
+                  </button>
+                </form>
+                <form
+                  method="post"
+                  action="{{ url_for('features.delete_category', category_id=category['id']) }}"
+                  data-confirm="Delete this category? Ideas using it will become uncategorised."
+                >
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token }}" /><button
+                    class="profile-text-button profile-danger-text"
+                    type="submit"
+                  >
+                    Delete
+                  </button>
+                </form>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="profile-empty-state">
+            <i class="ri-folder-add-line" aria-hidden="true"></i>
+            <h3>No categories yet.</h3>
+            <p>Create a category to organize your ideas.</p>
+          </div>
+        {% endif %}
+      </section>
+      <section class="profile-card profile-section-card">
+        <div class="profile-section-heading">
+          <div>
+            <h2>Tags</h2>
+            <p>Use keywords to help find related ideas.</p>
+          </div>
+          <i class="ri-hashtag" aria-hidden="true"></i>
+        </div>
+        <form
+          class="taxonomy-create-form"
+          method="post"
+          action="{{ url_for('features.create_tag') }}"
+        >
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+          <label for="new-tag-name">Tag name</label>
+          <div class="taxonomy-add-row">
+            <input
+              id="new-tag-name"
+              name="name"
+              type="text"
+              maxlength="40"
+              placeholder="e.g. character"
+              required
+            /><button class="profile-button" type="submit">Add tag</button>
+          </div>
+        </form>
+        {% if tags %}
+          <div class="taxonomy-list taxonomy-scroll-list">
+            {% for tag in tags %}
+              <div class="taxonomy-row">
+                <form method="post" action="{{ url_for('features.rename_tag', tag_id=tag['id']) }}">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token }}" /><label
+                    class="visually-hidden"
+                    for="tag-name-{{ tag['id'] }}"
+                    >Rename {{ tag['name'] }}</label
+                  ><input
+                    id="tag-name-{{ tag['id'] }}"
+                    name="name"
+                    value="{{ tag['name'] }}"
+                    maxlength="40"
+                    required
+                  /><span class="taxonomy-count">{{ tag['idea_count'] }} ideas</span
+                  ><button class="profile-text-button" type="submit">Save</button>
+                </form>
+                <form
+                  method="post"
+                  action="{{ url_for('features.delete_tag', tag_id=tag['id']) }}"
+                  data-confirm="Delete this tag from your tag list and ideas?"
+                >
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token }}" /><button
+                    class="profile-text-button profile-danger-text"
+                    type="submit"
+                  >
+                    Delete
+                  </button>
+                </form>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="profile-empty-state">
+            <i class="ri-price-tag-2-line" aria-hidden="true"></i>
+            <h3>No tags yet.</h3>
+            <p>Tags you add to ideas will appear here.</p>
+          </div>
+        {% endif %}
+      </section>
+    </div>
+    <div class="profile-action-grid">
+      <section class="profile-card profile-section-card">
+        <div class="profile-section-heading">
+          <div>
+            <h2>Account actions</h2>
+            <p>End your current session.</p>
+          </div>
+          <i class="ri-logout-box-r-line" aria-hidden="true"></i>
+        </div>
+        <form action="{{ url_for('logout') }}" method="post">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+          <button type="submit" class="profile-button profile-button-secondary">
+            <i class="ri-logout-box-r-line" aria-hidden="true"></i>
+            Log out
+          </button>
+        </form>
+      </section>
+      <section class="profile-card profile-section-card profile-danger-card">
+        <div class="profile-section-heading">
+          <div>
+            <h2>Delete account permanently</h2>
+            <p>
+              This permanently removes your account, projects, ideas, categories, tags, connections
+              and notes. This action cannot be undone.
+            </p>
+          </div>
+          <i class="ri-delete-bin-6-line" aria-hidden="true"></i>
+        </div>
+        <button
+          type="button"
+          class="profile-button profile-button-danger"
+          data-dialog-open="delete-account-dialog"
+        >
+          <i class="ri-delete-bin-line" aria-hidden="true"></i>
+          Delete my account
+        </button>
+      </section>
+    </div>
+    <dialog
+      class="feature-dialog"
+      id="delete-account-dialog"
+      aria-labelledby="delete-account-title"
+    >
+      <form
+        method="post"
+        action="{{ url_for('delete_account') }}"
+        class="feature-dialog-form account-delete-form"
+      >
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+        <button class="dialog-x" type="button" data-dialog-close aria-label="Close">×</button>
+        <p class="feature-eyebrow danger-text">PERMANENT ACCOUNT ACTION</p>
+        <h2 id="delete-account-title">Delete your account?</h2>
+        <p>
+          All your account data will be permanently deleted, including every project, idea,
+          category, tag, connection and reminder note. You cannot restore this data afterward.
+        </p>
+        <div class="feature-form-field">
+          <label for="delete-account-password">Confirm your current password</label>
+          <input
+            id="delete-account-password"
+            name="current_password"
+            type="password"
+            autocomplete="current-password"
+            required
+          />
+        </div>
+        <div class="feature-form-field">
+          <label for="delete-account-confirmation">Type DELETE to confirm</label>
+          <input
+            id="delete-account-confirmation"
+            name="confirmation"
+            type="text"
+            autocomplete="off"
+            required
+            pattern="DELETE"
+            title="Type DELETE in capital letters"
+          />
+        </div>
+        <div class="dialog-actions">
+          <button class="feature-button feature-button-secondary" type="button" data-dialog-close>
+            Cancel
+          </button>
+          <button class="feature-button feature-button-danger" type="submit">
+            Permanently delete account
+          </button>
+        </div>
+      </form>
+    </dialog>
+  </div>
+  <script src="{{ url_for('static', filename='JS/profile.js') }}" defer></script>
+{% endblock %}

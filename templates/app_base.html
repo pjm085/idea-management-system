@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% block extra_styles %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/features.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/ui-polish.css') }}" />
+{% endblock %}
+{% block content %}
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-logo">JO!</div>
+        <div class="brand-name">THE HELPER</div>
+      </div>
+      <nav class="main-navigation" aria-label="Main navigation">
+        <a
+          href="{{ url_for('dashboard') }}"
+          class="nav-item {{ 'active' if request.endpoint == 'dashboard' else '' }}"
+          {% if request.endpoint == 'dashboard' %}aria-current="page"{% endif %}
+        >
+          <i class="ri-home-4-line nav-icon" aria-hidden="true"></i>
+          <span class="nav-text">Home</span>
+        </a>
+        <a
+          href="{{ url_for('features.projects') }}"
+          class="nav-item {{ 'active' if request.endpoint in ['features.projects', 'features.project_detail'] else '' }}"
+          {% if request.endpoint in ['features.projects', 'features.project_detail'] %}aria-current="page"{% endif %}
+        >
+          <i class="ri-folder-2-line nav-icon" aria-hidden="true"></i>
+          <span class="nav-text">Projects</span>
+        </a>
+        <a
+          href="{{ url_for('features.quick_idea') }}"
+          class="nav-item {{ 'active' if request.endpoint == 'features.quick_idea' else '' }}"
+          {% if request.endpoint == 'features.quick_idea' %}aria-current="page"{% endif %}
+        >
+          <i class="ri-lightbulb-line nav-icon" aria-hidden="true"></i>
+          <span class="nav-text">Quick Idea</span>
+        </a>
+        <a
+          href="{{ url_for('features.search') }}"
+          class="nav-item {{ 'active' if request.endpoint == 'features.search' else '' }}"
+          {% if request.endpoint == 'features.search' %}aria-current="page"{% endif %}
+        >
+          <i class="ri-search-line nav-icon" aria-hidden="true"></i>
+          <span class="nav-text">Search</span>
+        </a>
+        <a
+          href="{{ url_for('features.unorganised_ideas') }}"
+          class="nav-item {{ 'active' if request.endpoint == 'features.unorganised_ideas' else '' }}"
+          {% if request.endpoint == 'features.unorganised_ideas' %}aria-current="page"{% endif %}
+        >
+          <i class="ri-inbox-archive-line nav-icon" aria-hidden="true"></i>
+          <span class="nav-text">Unorganised Ideas</span>
+        </a>
+        <a
+          href="{{ url_for('features.help_page') }}"
+          class="nav-item {{ 'active' if request.endpoint == 'features.help_page' else '' }}"
+          {% if request.endpoint == 'features.help_page' %}aria-current="page"{% endif %}
+        >
+          <i class="ri-question-line nav-icon" aria-hidden="true"></i>
+          <span class="nav-text">Help</span>
+        </a>
+      </nav>
+      <div class="recent-section">
+        <div class="recent-header">
+          <span class="sidebar-section-title">My Projects</span>
+          <button
+            type="button"
+            class="recent-history-button"
+            aria-label="Refresh project list"
+            title="Refresh project list"
+            data-refresh-page
+          >
+            <i class="ri-refresh-line" aria-hidden="true"></i>
+          </button>
+        </div>
+        <div class="recent-list" aria-label="My projects">
+          {% if recent_projects %}
+            {% for project in recent_projects %}
+              <a
+                href="{{ url_for('features.project_detail', project_id=project['id']) }}"
+                class="recent-project-link{% if request.endpoint == 'features.project_detail' and request.view_args and request.view_args.get('project_id') == project['id'] %} active{% endif %}"
+                title="{{ project['name'] }}"
+                {% if request.endpoint == 'features.project_detail' and request.view_args and request.view_args.get('project_id') == project['id'] %}aria-current="page"{% endif %}
+              >
+                <span class="recent-project-icon"
+                  ><i class="ri-folder-3-line" aria-hidden="true"></i
+                ></span>
+                <span class="recent-project-name">{{ project['name'] }}</span>
+              </a>
+            {% endfor %}
+          {% else %}
+            <div class="recent-empty">
+              <i class="ri-folder-open-line" aria-hidden="true"></i>
+              <span>No projects yet.</span>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+      <div class="sidebar-account">
+        {% if current_user %}
+          <div class="account-section-label">YOUR ACCOUNT</div>
+          <a
+            href="{{ url_for('profile') }}"
+            class="account-button{% if request.endpoint == 'profile' %} active{% endif %}"
+            aria-label="Open profile and account settings"
+            title="Open profile and account settings"
+            {% if request.endpoint == 'profile' %}aria-current="page"{% endif %}
+          >
+            <div class="account-avatar">{{ (current_user["name"] or "U")[0]|upper }}</div>
+            <div class="account-details">
+              <strong>{{ current_user["name"] }}</strong>
+              <span>{{ current_user["email"] }}</span>
+            </div>
+            <span class="account-profile-icon" aria-hidden="true">
+              <i class="ri-user-settings-line"></i>
+            </span>
+          </a>
+        {% endif %}
+      </div>
+    </aside>
+    <main class="main-content">{% block app_content %}{% endblock %}</main>
+  </div>
+  <dialog
+    class="app-confirm-dialog"
+    id="app-confirm-dialog"
+    aria-labelledby="app-confirm-title"
+    aria-describedby="app-confirm-message"
+  >
+    <div class="app-confirm-panel">
+      <button
+        class="app-confirm-close"
+        type="button"
+        data-confirm-cancel
+        aria-label="Close confirmation"
+      >
+        ×
+      </button>
+      <div class="app-confirm-icon" aria-hidden="true">
+        <i class="ri-delete-bin-line"></i>
+      </div>
+      <p class="app-confirm-eyebrow">CONFIRM ACTION</p>
+      <h2 id="app-confirm-title">Are you sure?</h2>
+      <p id="app-confirm-message">Please confirm that you want to continue.</p>
+      <div class="app-confirm-actions">
+        <button class="app-confirm-cancel" type="button" data-confirm-cancel>Cancel</button>
+        <button class="app-confirm-accept" id="app-confirm-accept" type="button">Delete</button>
+      </div>
+    </div>
+  </dialog>
+  <script src="{{ url_for('static', filename='JS/features.js') }}" defer></script>
+{% endblock %}

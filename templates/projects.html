@@ -1,0 +1,177 @@
+{% extends "app_base.html" %}
+{% block title %}Projects - JO! THE HELPER{% endblock %}
+{% block app_content %}
+  <div class="feature-page projects-page">
+    {% include "feature_flash.html" %}
+    <header class="feature-page-header">
+      <div>
+        <p class="feature-eyebrow">YOUR CREATIVE SPACE</p>
+        <h1>Projects</h1>
+        <p class="feature-lead">
+          Give your thoughts a home. Capture ideas, organize them into projects, and connect the
+          dots as your thinking grows.
+        </p>
+      </div>
+      {% if projects %}
+        <button class="feature-button" type="button" data-dialog-open="create-project-dialog">
+          <i class="ri-add-line"></i> Create project
+        </button>
+      {% endif %}
+    </header>
+    {% if projects %}
+      <section class="feature-grid project-grid" aria-label="Your projects">
+        {% for project in projects %}
+          <article class="feature-card project-card">
+            <a
+              class="project-card-main"
+              href="{{ url_for('features.project_detail', project_id=project['id']) }}"
+            >
+              <span class="feature-card-icon"><i class="ri-folder-3-line"></i></span>
+              <h2>{{ project['name'] }}</h2>
+              <p>
+                {{ project['idea_count'] }} {{ 'idea' if project['idea_count'] == 1 else 'ideas' }}
+              </p>
+              <span class="feature-muted"
+                >Created
+                {{ project['created_at'][:10] if project['created_at'] else 'recently' }}</span
+              >
+            </a>
+            <details class="card-menu">
+              <summary aria-label="Options for {{ project['name'] }}">
+                <i class="ri-more-2-fill"></i>
+              </summary>
+              <div class="card-menu-panel">
+                <button type="button" data-dialog-open="rename-project-{{ project['id'] }}">
+                  <i class="ri-edit-line"></i> Rename project
+                </button>
+                <button
+                  class="danger-text"
+                  type="button"
+                  data-dialog-open="delete-project-{{ project['id'] }}"
+                >
+                  <i class="ri-delete-bin-line"></i> Delete project
+                </button>
+              </div>
+            </details>
+          </article>
+          <dialog class="feature-dialog" id="rename-project-{{ project['id'] }}">
+            <form
+              method="post"
+              action="{{ url_for('features.rename_project', project_id=project['id']) }}"
+              class="feature-dialog-form"
+            >
+              <input type="hidden" name="csrf_token" value="{{ csrf_token }}" /><input
+                type="hidden"
+                name="source"
+                value="list"
+              />
+              <button class="dialog-x" type="button" data-dialog-close aria-label="Close">×</button>
+              <p class="feature-eyebrow">PROJECT SETTINGS</p>
+              <h2>Rename project</h2>
+              <label for="project-name-{{ project['id'] }}">PROJECT NAME</label>
+              <input
+                id="project-name-{{ project['id'] }}"
+                name="name"
+                type="text"
+                maxlength="100"
+                value="{{ project['name'] }}"
+                required
+              />
+              <div class="dialog-actions">
+                <button
+                  type="button"
+                  class="feature-button feature-button-secondary"
+                  data-dialog-close
+                >
+                  Cancel</button
+                ><button type="submit" class="feature-button">Save</button>
+              </div>
+            </form>
+          </dialog>
+          <dialog class="feature-dialog" id="delete-project-{{ project['id'] }}">
+            <form
+              method="post"
+              action="{{ url_for('features.delete_project', project_id=project['id']) }}"
+              class="feature-dialog-form"
+            >
+              <input type="hidden" name="csrf_token" value="{{ csrf_token }}" /><input
+                type="hidden"
+                name="source"
+                value="list"
+              />
+              <button class="dialog-x" type="button" data-dialog-close aria-label="Close">×</button>
+              <p class="feature-eyebrow danger-text">PLEASE CONFIRM</p>
+              <h2>Delete this project?</h2>
+              <p>
+                “{{ project['name'] }}” will be deleted. Its ideas will be kept and moved to
+                Unorganised Ideas.
+              </p>
+              <div class="dialog-actions">
+                <button
+                  type="button"
+                  class="feature-button feature-button-secondary"
+                  data-dialog-close
+                >
+                  Cancel</button
+                ><button type="submit" class="feature-button feature-button-danger">
+                  Delete project
+                </button>
+              </div>
+            </form>
+          </dialog>
+        {% endfor %}
+      </section>
+    {% else %}
+      <section class="feature-empty-state project-empty-state">
+        <div class="empty-art">
+          <i class="ri-folder-add-line"></i>
+        </div>
+        <h2>You don't have any projects yet.</h2>
+        <p>Create your first project to start organizing your ideas.</p>
+        <button class="feature-button" type="button" data-dialog-open="create-project-dialog">
+          <i class="ri-add-line"></i> Create project
+        </button>
+      </section>
+    {% endif %}
+    {% if unorganised_count > 0 %}
+      <a class="unorganised-summary-card" href="{{ url_for('features.unorganised_ideas') }}">
+        <span class="summary-icon"><i class="ri-inbox-archive-line"></i></span>
+        <span class="summary-copy"
+          ><strong>Unorganised Ideas</strong
+          ><span
+            >{{ unorganised_count }} {{ 'idea' if unorganised_count == 1 else 'ideas' }} waiting for
+            a project.</span
+          ></span
+        >
+        <span class="summary-action">View ideas <i class="ri-arrow-right-line"></i></span>
+      </a>
+    {% endif %}
+  </div>
+  <dialog class="feature-dialog" id="create-project-dialog">
+    <form
+      method="post"
+      action="{{ url_for('features.create_project') }}"
+      class="feature-dialog-form"
+    >
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+      <button class="dialog-x" type="button" data-dialog-close aria-label="Close">×</button>
+      <p class="feature-eyebrow">MAKE ROOM FOR AN IDEA</p>
+      <h2>Create project</h2>
+      <label for="new-project-name">PROJECT NAME</label>
+      <input
+        id="new-project-name"
+        name="name"
+        type="text"
+        maxlength="100"
+        placeholder="Give your project a name"
+        required
+        autofocus
+      />
+      <div class="dialog-actions">
+        <button type="button" class="feature-button feature-button-secondary" data-dialog-close>
+          Cancel</button
+        ><button type="submit" class="feature-button">Create project</button>
+      </div>
+    </form>
+  </dialog>
+{% endblock %}

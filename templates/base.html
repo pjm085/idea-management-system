@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <!-- ===== DOCUMENT HEAD ===== -->
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}JO! THE HELPER{% endblock %}</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@4.9.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Audiowide&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Kaushan+Script&family=Quando&family=Quicksand:wght@400;500;600;700&family=Quantico:wght@400;700&family=Rakkas&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth-polish.css') }}" />
+    {% block extra_styles %}{% endblock %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}" />
+  </head>
+  <body>
+    <!-- ===== PAGE CONTENT ===== -->
+    {% block content %}{% endblock %}
+  </body>
+</html>

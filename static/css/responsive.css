@@ -1,0 +1,696 @@
+/* ===== RESPONSIVE LAYOUTS ===== */
+
+@media (max-width: 820px) {
+  .app-layout {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+  }
+
+  .sidebar {
+    position: relative;
+    inset: auto;
+    z-index: 30;
+    display: grid;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto auto auto;
+    gap: 9px 12px;
+    padding: 12px 14px 10px;
+    overflow: visible;
+    border-radius: 0 0 20px 20px;
+  }
+
+  .sidebar-brand {
+    grid-column: 1;
+    grid-row: 1;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    min-width: 0;
+    padding: 0;
+  }
+
+  .brand-logo {
+    flex: 0 0 auto;
+    font-size: 34px;
+    line-height: 1;
+  }
+
+  .brand-name {
+    margin-top: 0;
+    font-size: 9px;
+    letter-spacing: 1.1px;
+  }
+
+  .main-navigation {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    display: flex;
+    flex-direction: row;
+    gap: 6px;
+    min-width: 0;
+    padding: 2px 1px 5px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+
+  .main-navigation::-webkit-scrollbar {
+    display: none;
+  }
+
+  .main-navigation .nav-item {
+    flex: 0 0 auto;
+    min-height: 38px;
+    gap: 7px;
+    padding: 0 11px;
+    border-radius: 11px;
+    white-space: nowrap;
+  }
+
+  .main-navigation .nav-icon {
+    width: 17px;
+    height: 17px;
+    font-size: 16px;
+  }
+
+  .main-navigation .nav-text {
+    font-size: 11px;
+  }
+
+  .recent-section {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    display: flex;
+    min-height: 0;
+    margin: 0;
+    padding: 7px 0 0;
+    border-top: 1px solid #d4cdb9;
+  }
+
+  .recent-header {
+    flex: 0 0 auto;
+    margin: 0 0 5px;
+    padding: 0 4px;
+  }
+
+  .recent-list {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: row;
+    gap: 6px;
+    min-height: 0;
+    max-width: 100%;
+    padding: 1px 2px 5px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+  }
+
+  .recent-project-link {
+    flex: 0 0 auto;
+    max-width: 180px;
+    min-height: 33px;
+  }
+
+  .recent-empty {
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 7px 9px;
+  }
+
+  .sidebar-account {
+    grid-column: 2;
+    grid-row: 1;
+    position: relative;
+    inset: auto;
+    width: auto;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .account-section-label {
+    display: none;
+  }
+
+  .account-button {
+    width: auto;
+    min-height: 40px;
+    gap: 7px;
+    padding: 3px 7px 3px 4px;
+    border-radius: 12px;
+  }
+
+  .account-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 17px;
+  }
+
+  .account-details {
+    max-width: min(32vw, 145px);
+  }
+  .account-details strong {
+    font-size: 11px;
+  }
+  .account-details span {
+    display: none;
+  }
+  .account-profile-icon {
+    display: none;
+  }
+
+  .main-content {
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    margin: 0;
+    padding: 16px 18px 0;
+  }
+
+  .greeting-section {
+    min-height: 150px;
+    gap: 12px;
+    padding: 4px 10px;
+  }
+
+  .greeting-content h1 {
+    font-size: clamp(17px, 3vw, 25px);
+  }
+  .current-date {
+    font-size: 15px;
+  }
+  .greeting-subtitle {
+    font-size: 15px;
+  }
+
+  .greeting-image-wrapper {
+    flex: 0 1 38%;
+    width: 38%;
+    max-width: 340px;
+    height: 165px;
+  }
+
+  .hero-section {
+    width: 100%;
+    height: auto;
+    min-height: 225px;
+    padding: 25px 28px 69px;
+    border-radius: 25px;
+  }
+
+  .hero-image-wrapper {
+    left: 18px;
+    width: 37%;
+  }
+
+  .hero-content {
+    width: 62%;
+    grid-template-columns: minmax(0, 1fr);
+    justify-content: end;
+  }
+
+  .hero-label {
+    grid-column: 1;
+    grid-row: 1;
+    padding: 0;
+    border: 0;
+    font-size: 11px;
+    transform: none;
+  }
+
+  .hero-content .hero-tagline {
+    grid-column: 1;
+    grid-row: 2;
+    margin-top: 8px;
+    font-size: 11px;
+    white-space: normal;
+  }
+
+  .hero-content h2 {
+    grid-column: 1;
+    grid-row: 3;
+    margin-top: 12px;
+    font-size: clamp(30px, 4.5vw, 43px);
+  }
+
+  .capture-button {
+    right: 18px;
+    bottom: 10px;
+    gap: 5px;
+    padding: 7px 11px;
+    font-size: 12px;
+  }
+
+  .capture-button i {
+    font-size: 18px;
+  }
+
+  .overview-section {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    padding: 11px;
+    border-radius: 22px;
+  }
+
+  .overview-card {
+    min-height: 122px;
+    padding: 9px 13px 12px;
+    border-radius: 15px;
+  }
+
+  .overview-number {
+    font-size: 34px;
+    line-height: 1.4;
+  }
+  .overview-label {
+    font-size: 13px;
+    line-height: 1.2;
+  }
+
+  .sticky-notes-section .section-heading {
+    margin: 20px 0 15px;
+    font-size: 20px;
+  }
+
+  .connections-section {
+    gap: 22px;
+    margin-top: 26px;
+    padding: 24px 28px;
+    border-radius: 24px;
+  }
+
+  .connections-content h2 {
+    font-size: clamp(27px, 4vw, 39px);
+  }
+}
+
+@media (max-width: 600px) {
+  .sidebar {
+    gap: 8px 7px;
+    padding: 10px 10px 8px;
+    border-radius: 0 0 17px 17px;
+  }
+
+  .brand-logo {
+    font-size: 30px;
+  }
+  .brand-name {
+    font-size: 8px;
+    letter-spacing: 0.8px;
+  }
+  .account-button {
+    min-height: 36px;
+    padding-right: 5px;
+  }
+  .account-avatar {
+    width: 29px;
+    height: 29px;
+    font-size: 15px;
+  }
+  .account-details {
+    max-width: 105px;
+  }
+  .account-details strong {
+    font-size: 10px;
+  }
+
+  .main-navigation {
+    gap: 4px;
+  }
+  .main-navigation .nav-item {
+    min-height: 36px;
+    gap: 6px;
+    padding: 0 9px;
+  }
+  .main-navigation .nav-text {
+    font-size: 10px;
+  }
+  .main-navigation .nav-icon {
+    font-size: 15px;
+  }
+
+  .sidebar-section-title {
+    font-size: 10px;
+  }
+  .recent-history-button {
+    width: 26px;
+    height: 26px;
+    flex-basis: 26px;
+  }
+  .recent-project-link {
+    max-width: 150px;
+    min-height: 31px;
+    font-size: 10px;
+  }
+
+  .main-content {
+    padding: 12px 12px 0;
+  }
+
+  .greeting-section {
+    min-height: 118px;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 5px;
+  }
+
+  .greeting-content h1 {
+    column-gap: 5px;
+    font-size: clamp(14px, 4.1vw, 20px);
+    letter-spacing: 0.25px;
+  }
+
+  .current-date {
+    margin-top: 5px;
+    font-size: 12px;
+  }
+  .greeting-subtitle {
+    font-size: 11px;
+    line-height: 1.4;
+  }
+
+  .greeting-image-wrapper {
+    flex: 0 0 31%;
+    width: 31%;
+    height: 112px;
+    transform: none;
+  }
+
+  .greeting-image {
+    width: 130%;
+    height: 130%;
+  }
+
+  .hero-section {
+    min-height: 205px;
+    padding: 20px 14px 61px;
+    border-radius: 20px;
+  }
+
+  .hero-image-wrapper {
+    left: 3px;
+    width: 36%;
+    height: 100%;
+  }
+
+  .hero-content {
+    width: 64%;
+  }
+  .hero-label {
+    font-size: 9px;
+    letter-spacing: 0.4px;
+  }
+  .hero-content .hero-tagline {
+    margin-top: 6px;
+    font-size: 9px;
+  }
+  .hero-content h2 {
+    margin-top: 10px;
+    font-size: clamp(24px, 6.2vw, 34px);
+    line-height: 1.08;
+  }
+
+  .capture-button {
+    right: 10px;
+    bottom: 9px;
+    min-height: 34px;
+    padding: 5px 9px;
+    border-width: 1px;
+    font-size: 10px;
+  }
+
+  .capture-button i {
+    font-size: 15px;
+  }
+
+  .overview-section {
+    gap: 8px;
+    margin-top: 13px;
+    padding: 8px;
+    border-radius: 17px;
+  }
+
+  .overview-card {
+    min-height: 100px;
+    padding: 8px 10px 10px;
+    border-radius: 12px;
+  }
+
+  .overview-number {
+    font-size: 29px;
+    line-height: 1.35;
+  }
+  .overview-label {
+    font-size: 11px;
+    line-height: 1.25;
+  }
+
+  .sticky-notes-section .section-heading {
+    margin: 17px 0 12px;
+    font-size: 18px;
+  }
+
+  .sticky-notes-section .note-input-row {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 9px;
+  }
+
+  .sticky-notes-section .note-input-row textarea {
+    width: 100%;
+    min-height: 58px;
+    font-size: 14px;
+  }
+
+  .sticky-notes-section .primary-button {
+    width: 100%;
+    min-height: 40px;
+    align-self: stretch;
+  }
+
+  .dashboard-notes-list {
+    max-height: 940px;
+  }
+  .dashboard-notes-grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-auto-rows: 142px;
+    gap: 13px;
+  }
+
+  .dashboard-sticky-note {
+    padding: 14px 13px 12px;
+    gap: 9px;
+  }
+  .dashboard-sticky-note-content {
+    font-size: 12px;
+  }
+  .dashboard-sticky-note-footer {
+    gap: 6px;
+    padding-top: 7px;
+  }
+  .dashboard-sticky-note-date {
+    font-size: 9px;
+  }
+  .dashboard-sticky-note-actions {
+    gap: 4px;
+  }
+  .dashboard-sticky-note-edit-trigger,
+  .dashboard-sticky-note-delete {
+    min-height: 27px;
+    padding: 5px 7px;
+    font-size: 9px;
+  }
+
+  .connections-section {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 15px;
+    min-height: 0;
+    margin-top: 22px;
+    padding: 21px 19px;
+    border-radius: 19px;
+  }
+
+  .connections-content h2 {
+    margin-top: 9px;
+    font-size: clamp(25px, 7vw, 34px);
+  }
+  .connections-label {
+    font-size: 10px;
+  }
+  .connection-illustration {
+    width: min(100%, 300px);
+    max-width: 100%;
+    transform: scale(0.88);
+    transform-origin: left top;
+  }
+
+  .dashboard-scroll {
+    padding-bottom: 25px;
+  }
+}
+
+@media (max-width: 680px) {
+  .auth-page {
+    min-height: 100svh;
+    align-items: flex-start;
+    padding: 12px 10px;
+  }
+
+  .auth-card {
+    width: 100%;
+    max-width: 520px;
+    min-height: 0;
+    grid-template-columns: minmax(0, 1fr);
+    margin: 0 auto;
+    border-radius: 23px;
+  }
+
+  .auth-intro {
+    min-height: 178px;
+    padding: 22px 25px 20px;
+  }
+
+  .brand h1 {
+    font-size: 38px;
+  }
+  .brand span {
+    margin-top: 5px;
+    font-size: 9px;
+    letter-spacing: 2px;
+  }
+
+  .intro-content {
+    margin-top: 22px;
+  }
+  .intro-content h2 {
+    font-size: clamp(27px, 7vw, 34px);
+    line-height: 1.08;
+  }
+  .intro-content p {
+    margin-top: 10px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .circle-top {
+    width: 115px;
+    height: 115px;
+    top: -35px;
+    right: -30px;
+  }
+  .circle-bottom {
+    width: 95px;
+    height: 95px;
+    right: 22px;
+    bottom: -42px;
+  }
+
+  .auth-form-section {
+    padding: 25px 23px 28px;
+  }
+  .auth-form {
+    max-width: none;
+  }
+  .auth-form h2 {
+    font-size: 28px;
+  }
+  .auth-description {
+    margin-bottom: 22px;
+    font-size: 14px;
+  }
+  .form-group {
+    margin-bottom: 17px;
+  }
+  .form-group label {
+    margin-bottom: 7px;
+    font-size: 11px;
+    letter-spacing: 1.1px;
+  }
+  .form-group input {
+    min-height: 48px;
+    padding: 12px 14px;
+    font-size: 15px;
+  }
+  .auth-button {
+    min-height: 48px;
+    padding: 13px 15px;
+    font-size: 14px;
+  }
+  .auth-switch {
+    margin-top: 21px;
+    font-size: 13px;
+  }
+  .password-hint,
+  .auth-field-hint {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 380px) {
+  .sidebar {
+    padding-inline: 8px;
+  }
+  .brand-logo {
+    font-size: 27px;
+  }
+  .brand-name {
+    font-size: 7px;
+  }
+  .account-details {
+    max-width: 82px;
+  }
+  .main-navigation .nav-item {
+    padding-inline: 8px;
+  }
+  .main-navigation .nav-text {
+    font-size: 9px;
+  }
+  .main-content {
+    padding-inline: 9px;
+  }
+  .greeting-content h1 {
+    font-size: 13px;
+  }
+  .current-date {
+    font-size: 11px;
+  }
+  .greeting-subtitle {
+    font-size: 10px;
+  }
+  .dashboard-sticky-note-footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .dashboard-sticky-note-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+  .profile-summary {
+    flex-wrap: wrap;
+  }
+  .profile-summary-details {
+    flex: 1 1 120px;
+  }
+  .profile-summary > .profile-button {
+    margin-left: auto;
+  }
+  .profile-stat-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .profile-management-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

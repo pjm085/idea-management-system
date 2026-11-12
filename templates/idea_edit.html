@@ -1,0 +1,97 @@
+{% extends "app_base.html" %}
+{% block title %}Edit Idea - JO! THE HELPER{% endblock %}
+{% block app_content %}
+  <div class="feature-page narrow-feature-page">
+    {% include "feature_flash.html" %}
+    <nav class="feature-breadcrumb" aria-label="Breadcrumb">
+      {% if idea["project_id"] %}
+        <a href="{{ url_for('features.project_detail', project_id=idea['project_id']) }}"
+          >{{ idea['project_name'] or 'Project' }}</a
+        >
+      {% else %}
+        <a href="{{ url_for('features.unorganised_ideas') }}">Unorganised Ideas</a>
+      {% endif %}<i class="ri-arrow-right-s-line"></i><span>Edit idea</span>
+    </nav>
+    <header class="feature-page-header">
+      <div>
+        <p class="feature-eyebrow">IDEA DETAILS</p>
+        <h1>Edit idea</h1>
+        <p class="feature-lead">Update the idea or move it to another project.</p>
+      </div>
+    </header>
+    <section class="feature-card quick-idea-card">
+      <form method="post" class="feature-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+        <div class="feature-form-field">
+          <label for="edit-title">Title</label
+          ><input
+            id="edit-title"
+            name="title"
+            value="{{ idea['title'] }}"
+            maxlength="120"
+            placeholder="Idea title"
+          />
+        </div>
+        <div class="feature-form-field">
+          <label for="edit-content">Idea content</label>
+          {# prettier-ignore-start #}
+          <textarea
+            id="edit-content"
+            name="content"
+            rows="8"
+            maxlength="12000"
+            placeholder="Add the detail behind the idea">{{ idea['content'] }}</textarea>
+          {# prettier-ignore-end #}
+        </div>
+        <div class="feature-form-grid">
+          <div class="feature-form-field">
+            <label for="edit-project">Project</label
+            ><select id="edit-project" name="project_id">
+              <option value="">No project — unorganised</option>
+              {% for project in projects %}
+                <option
+                  value="{{ project['id'] }}"
+                  {{ 'selected' if idea['project_id'] == project['id'] else '' }}
+                >
+                  {{ project['name'] }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="feature-form-field">
+            <label for="edit-category">Category</label
+            ><select id="edit-category" name="category_id">
+              <option value="">No category</option>
+              {% for category in categories %}
+                <option
+                  value="{{ category['id'] }}"
+                  {{ 'selected' if idea['category_id'] == category['id'] else '' }}
+                >
+                  {{ category['name'] }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="feature-form-field">
+          <label for="edit-tags">Tags</label
+          ><input
+            id="edit-tags"
+            name="tags"
+            value="{{ idea['tags_text'] }}"
+            placeholder="story, character, draft"
+          /><span class="field-help"
+            >Separate tags with commas. New tags will be added to your tag list.</span
+          >
+        </div>
+        <div class="feature-form-actions">
+          <a
+            class="feature-button feature-button-secondary"
+            href="{{ url_for('features.project_detail', project_id=idea['project_id']) if idea['project_id'] else url_for('features.unorganised_ideas') }}"
+            >Cancel</a
+          ><button type="submit" class="feature-button">Save changes</button>
+        </div>
+      </form>
+    </section>
+  </div>
+{% endblock %}

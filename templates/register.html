@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}
+  Register - JO! THE HELPER
+{% endblock %}
+{% block content %}
+  <div class="auth-page">
+    <div class="auth-card">
+      <div class="auth-intro">
+        <div class="brand">
+          <h1>JO!</h1>
+          <span>THE HELPER</span>
+        </div>
+        <div class="intro-content">
+          <h2>
+            Give your
+            <br />
+            thoughts a place
+            <br />
+            to grow.
+          </h2>
+          <p>
+            Your Ideas, Your Creation.
+            <br />
+            Capture them. Connect them.
+          </p>
+        </div>
+        <div class="decorative-circle circle-top" aria-hidden="true"></div>
+        <div class="decorative-circle circle-bottom" aria-hidden="true"></div>
+      </div>
+      <div class="auth-form-section">
+        <div class="auth-form">
+          <h2>Create your account</h2>
+          <p class="auth-description">Your private creative workspace is one step away.</p>
+          {% if error %}
+            <div class="auth-error" role="alert">{{ error }}</div>
+          {% endif %}
+          <form method="post" action="{{ url_for('register') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+            <div class="form-group">
+              <label for="name">YOUR NAME</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                placeholder="Enter your name"
+                value="{{ name|default('') }}"
+                autocomplete="name"
+                maxlength="24"
+                aria-describedby="name-length-hint"
+                required
+              />
+              <small class="auth-field-hint" id="name-length-hint"
+                >Use up to 24 characters for a dashboard-friendly name.</small
+              >
+            </div>
+            <div class="form-group">
+              <label for="email">EMAIL</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Enter your email"
+                value="{{ email|default('') }}"
+                autocomplete="email"
+                maxlength="254"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="password">PASSWORD</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Create a password"
+                autocomplete="new-password"
+                minlength="6"
+                maxlength="128"
+                required
+              />
+              <small class="password-hint"
+                >At least 6 characters. Longer passwords are allowed.</small
+              >
+            </div>
+            <button type="submit" class="auth-button">Create account</button>
+          </form>
+          <p class="auth-switch">
+            Already have an account?
+            <a href="{{ url_for('login') }}">Log in</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

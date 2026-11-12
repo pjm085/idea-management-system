@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}
+  Login - JO! THE HELPER
+{% endblock %}
+{% block content %}
+  <div class="auth-page">
+    <div class="auth-card">
+      <div class="auth-intro">
+        <div class="brand">
+          <h1>JO!</h1>
+          <span>THE HELPER</span>
+        </div>
+        <div class="intro-content">
+          <h2>
+            Where little thoughts
+            <br />
+            become ideas.
+          </h2>
+          <p>
+            Dream it. Develop it.
+            <br />
+            Your next great idea could begin right here.
+          </p>
+        </div>
+        <div class="decorative-circle circle-top" aria-hidden="true"></div>
+        <div class="decorative-circle circle-bottom" aria-hidden="true"></div>
+      </div>
+      <div class="auth-form-section">
+        <div class="auth-form">
+          <h2>Welcome back</h2>
+          <p class="auth-description">Log in to continue with your ideas.</p>
+          {% if error %}
+            <div class="auth-error" role="alert">{{ error }}</div>
+          {% endif %}
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              <div class="profile-flash-list" aria-live="polite">
+                {% for category, message in messages %}
+                  <div
+                    class="profile-flash {{ 'is-error' if category == 'error' else 'is-success' }}"
+                    role="status"
+                  >
+                    {{ message }}
+                  </div>
+                {% endfor %}
+              </div>
+            {% endif %}
+          {% endwith %}
+          <form method="post" action="{{ url_for('login') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+            <div class="form-group">
+              <label for="email">EMAIL</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Enter your email"
+                value="{{ email|default('') }}"
+                autocomplete="email"
+                maxlength="254"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="password">PASSWORD</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Enter your password"
+                autocomplete="current-password"
+                maxlength="128"
+                required
+              />
+            </div>
+            <button type="submit" class="auth-button">Log in</button>
+          </form>
+          <p class="auth-switch">
+            New here?
+            <a href="{{ url_for('register') }}">Create an account</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

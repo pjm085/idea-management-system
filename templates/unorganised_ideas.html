@@ -1,0 +1,96 @@
+{% extends "app_base.html" %}
+{% block title %}Unorganised Ideas - JO! THE HELPER{% endblock %}
+{% block app_content %}
+  <div class="feature-page">
+    {% include "feature_flash.html" %}
+    <header class="feature-page-header">
+      <div>
+        <p class="feature-eyebrow">IDEAS WAITING FOR A HOME</p>
+        <h1>Unorganised Ideas</h1>
+        <p class="feature-lead">
+          Thoughts that do not belong to a project yet. Edit any idea when you are ready to organize
+          it.
+        </p>
+      </div>
+      <a class="feature-button" href="{{ url_for('features.quick_idea') }}"
+        ><i class="ri-add-line"></i> Quick Idea</a
+      >
+    </header>
+    {% if ideas %}
+      <div class="feature-toolbar">
+        <span>{{ ideas|length }} {{ 'idea' if ideas|length == 1 else 'ideas' }}</span>
+        <form method="get" action="{{ url_for('features.unorganised_ideas') }}">
+          <label>
+            Sort
+            <select name="sort" data-submit-on-change>
+              <option value="newest" {{ 'selected' if sort == 'newest' else '' }}>
+                Newest first
+              </option>
+              <option value="oldest" {{ 'selected' if sort == 'oldest' else '' }}>
+                Oldest first
+              </option>
+            </select>
+          </label>
+        </form>
+      </div>
+      <section class="idea-list">
+        {% for idea in ideas %}
+          <article class="feature-card idea-card">
+            <div class="idea-card-content">
+              <h2>{{ idea['title'] }}</h2>
+              {% if idea["content"] %}
+                <p class="idea-body">{{ idea['content'] }}</p>
+              {% endif %}{% if idea["category_name"] %}
+                <span class="category-chip">{{ idea['category_name'] }}</span>
+              {% endif %}{% if idea["tags"] %}
+                <div class="tag-list">
+                  {% for tag in idea['tags'] %}
+                    <span class="tag-chip">#{{ tag['name'] }}</span>
+                  {% endfor %}
+                </div>
+              {% endif %}<span class="feature-muted"
+                >Added {{ idea['created_at'][:10] if idea['created_at'] else '' }}</span
+              >
+            </div>
+            <div class="idea-actions">
+              <a
+                class="icon-action"
+                href="{{ url_for('features.edit_idea', idea_id=idea['id']) }}"
+                title="Edit idea"
+                aria-label="Edit idea"
+                ><i class="ri-edit-line"></i
+              ></a>
+              <form
+                method="post"
+                action="{{ url_for('features.delete_idea', idea_id=idea['id']) }}"
+                data-confirm="Permanently delete this idea? This cannot be undone."
+              >
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}" /><input
+                  type="hidden"
+                  name="next"
+                  value="unorganised"
+                /><button
+                  class="icon-action danger-text"
+                  type="submit"
+                  title="Delete idea"
+                  aria-label="Delete idea"
+                >
+                  <i class="ri-delete-bin-line"></i>
+                </button>
+              </form>
+            </div>
+          </article>
+        {% endfor %}
+      </section>
+    {% else %}
+      <section class="feature-empty-state">
+        <div class="empty-art"><i class="ri-inbox-archive-line"></i></div>
+        <h2>No unorganised ideas right now.</h2>
+        <p>Save a quick idea, or delete a project and its ideas will be kept here.</p>
+        <a class="feature-button" href="{{ url_for('features.quick_idea') }}"
+          ><i class="ri-add-line"></i> Capture a quick idea</a
+        >
+      </section>
+    {% endif %}
+  </div>
+{% endblock %}

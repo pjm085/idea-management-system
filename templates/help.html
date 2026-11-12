@@ -1,0 +1,139 @@
+{% extends "app_base.html" %}
+{% block title %}Help & Guide - JO! THE HELPER{% endblock %}
+{% block app_content %}
+  <div class="feature-page help-page help-page-redesigned">
+    <header class="help-hero">
+      <div class="help-hero-copy">
+        <p class="feature-eyebrow">
+          <i class="ri-book-open-line" aria-hidden="true"></i> A LITTLE GUIDANCE
+        </p>
+        <h1>Help &amp; Guide</h1>
+        <p class="feature-lead">
+          A simple guide to capturing, organizing and connecting your thoughts.
+        </p>
+      </div>
+      <div class="help-hero-art" aria-hidden="true">
+        <span class="help-hero-orbit help-hero-orbit-one"></span>
+        <span class="help-hero-orbit help-hero-orbit-two"></span>
+        <span class="help-hero-icon"><i class="ri-book-3-line"></i></span>
+        <span class="help-hero-spark help-hero-spark-one"><i class="ri-sparkling-2-line"></i></span>
+        <span class="help-hero-spark help-hero-spark-two"><i class="ri-leaf-line"></i></span>
+      </div>
+    </header>
+    <section class="help-group" aria-labelledby="help-start-heading">
+      <div class="help-group-heading">
+        <span class="help-group-number">01</span>
+        <h2 id="help-start-heading">Get started</h2>
+        <span class="help-group-rule"></span>
+      </div>
+      <div class="help-grid">
+        <article class="feature-card help-card help-card-quick">
+          <span class="help-icon"><i class="ri-lightbulb-line" aria-hidden="true"></i></span>
+          <h3>Quick Idea</h3>
+          <p>
+            Save a thought as soon as it comes to you. Choosing a project is optional, and you can
+            organize it later.
+          </p>
+          <a href="{{ url_for('features.quick_idea') }}"
+            >Capture an idea <i class="ri-arrow-right-line" aria-hidden="true"></i
+          ></a>
+        </article>
+        <article class="feature-card help-card help-card-projects">
+          <span class="help-icon"><i class="ri-folder-3-line" aria-hidden="true"></i></span>
+          <h3>Projects</h3>
+          <p>
+            Create projects for any topic. Rename or delete a project whenever needed. Deleting a
+            project keeps its ideas in Unorganised Ideas.
+          </p>
+          <a href="{{ url_for('features.projects') }}"
+            >Manage projects <i class="ri-arrow-right-line" aria-hidden="true"></i
+          ></a>
+        </article>
+        <article class="feature-card help-card help-card-unorganised">
+          <span class="help-icon"><i class="ri-inbox-archive-line" aria-hidden="true"></i></span>
+          <h3>Unorganised Ideas</h3>
+          <p>
+            Ideas without a project live here. Edit an idea to assign it to an existing project or
+            remove its project assignment.
+          </p>
+          <a href="{{ url_for('features.unorganised_ideas') }}"
+            >Organize ideas <i class="ri-arrow-right-line" aria-hidden="true"></i
+          ></a>
+        </article>
+      </div>
+    </section>
+    <section class="help-group" aria-labelledby="help-organise-heading">
+      <div class="help-group-heading">
+        <span class="help-group-number">02</span>
+        <h2 id="help-organise-heading">Organise &amp; explore</h2>
+        <span class="help-group-rule"></span>
+      </div>
+      <div class="help-grid">
+        <article class="feature-card help-card help-card-search">
+          <span class="help-icon"><i class="ri-search-line" aria-hidden="true"></i></span>
+          <h3>Global Search</h3>
+          <p>
+            Use the Search page to find ideas by title, text or tag, and find projects by name. Sort
+            results newest or oldest.
+          </p>
+          <a href="{{ url_for('features.search') }}"
+            >Search workspace <i class="ri-arrow-right-line" aria-hidden="true"></i
+          ></a>
+        </article>
+        <article class="feature-card help-card help-card-taxonomy">
+          <span class="help-icon"><i class="ri-price-tag-3-line" aria-hidden="true"></i></span>
+          <h3>Categories &amp; Tags</h3>
+          <p>
+            Categories help classify ideas, while tags give you flexible keywords. Manage both in
+            your Profile page.
+          </p>
+          <a href="{{ url_for('profile') }}#categories-tags"
+            >Manage categories and tags <i class="ri-arrow-right-line" aria-hidden="true"></i
+          ></a>
+        </article>
+        <article class="feature-card help-card help-card-graph">
+          <span class="help-icon"><i class="ri-node-tree" aria-hidden="true"></i></span>
+          <h3>Connections &amp; Graph</h3>
+          <p>
+            Inside a project, create a connection between two different ideas and write an optional
+            note about how they relate. The Graph tab shows all ideas.
+          </p>
+          <a href="{{ url_for('features.projects') }}"
+            >Open projects <i class="ri-arrow-right-line" aria-hidden="true"></i
+          ></a>
+        </article>
+      </div>
+    </section>
+    <section class="help-group" aria-labelledby="help-workspace-heading">
+      <div class="help-group-heading">
+        <span class="help-group-number">03</span>
+        <h2 id="help-workspace-heading">Your workspace</h2>
+        <span class="help-group-rule"></span>
+      </div>
+      <div class="help-grid help-grid-two">
+        <article class="feature-card help-card help-card-notes">
+          <span class="help-icon"><i class="ri-sticky-note-line" aria-hidden="true"></i></span>
+          <h3>Reminder Notes</h3>
+          <p>
+            Add personal reminders on your dashboard. Notes are saved to your account and can be
+            edited or deleted at any time.
+          </p>
+          <a href="{{ url_for('dashboard') }}"
+            >Open dashboard <i class="ri-arrow-right-line" aria-hidden="true"></i
+          ></a>
+        </article>
+        <article class="feature-card help-card help-card-account">
+          <span class="help-icon"><i class="ri-user-settings-line" aria-hidden="true"></i></span>
+          <h3>Account &amp; Privacy</h3>
+          <p>
+            Use the account control at the bottom of the sidebar to edit your details, manage your
+            photo, change your password or log out. Your workspace data belongs to your account.
+          </p>
+          <a href="{{ url_for('profile') }}"
+            >Open Profile <i class="ri-arrow-right-line" aria-hidden="true"></i
+          ></a>
+        </article>
+      </div>
+    </section>
+  </div>
+{% endblock %}

@@ -1,0 +1,461 @@
+{% extends "app_base.html" %}
+{% block title %}{{ project['name'] }} - JO! THE HELPER{% endblock %}
+{% block app_content %}
+  <div class="feature-page project-detail-page">
+    {% include "feature_flash.html" %}
+    <nav class="feature-breadcrumb" aria-label="Breadcrumb">
+      <a href="{{ url_for('features.projects') }}">Projects</a><i class="ri-arrow-right-s-line"></i
+      ><span>{{ project['name'] }}</span>
+    </nav>
+    <header class="feature-page-header project-detail-header">
+      <div>
+        <p class="feature-eyebrow">PROJECT WORKSPACE</p>
+        <h1>{{ project['name'] }}</h1>
+        <p class="feature-lead">
+          {{ total_idea_count }} {{ 'idea' if total_idea_count == 1 else 'ideas' }} in this project
+        </p>
+      </div>
+      <div class="header-actions">
+        {% if total_idea_count > 0 %}
+          <button class="feature-button" type="button" data-dialog-open="add-idea-dialog">
+            <i class="ri-add-line"></i> Add Idea
+          </button>
+        {% endif %}
+        <details class="card-menu project-options">
+          <summary aria-label="Project options">
+            <i class="ri-more-2-fill"></i>
+          </summary>
+          <div class="card-menu-panel">
+            <button type="button" data-dialog-open="rename-project-dialog">
+              <i class="ri-edit-line"></i> Rename project</button
+            ><button class="danger-text" type="button" data-dialog-open="delete-project-dialog">
+              <i class="ri-delete-bin-line"></i> Delete project
+            </button>
+          </div>
+        </details>
+      </div>
+    </header>
+    <nav class="project-tabs" aria-label="Project views">
+      <a
+        class="{{ 'is-active' if tab == 'ideas' else '' }}"
+        href="{{ url_for('features.project_detail', project_id=project['id'], tab='ideas') }}"
+        ><i class="ri-lightbulb-line"></i> Ideas</a
+      >
+      <a
+        class="{{ 'is-active' if tab == 'graph' else '' }}"
+        href="{{ url_for('features.project_detail', project_id=project['id'], tab='graph') }}"
+        ><i class="ri-node-tree"></i> Graph</a
+      >
+    </nav>
+    {% if tab == "ideas" %}
+      {% if total_idea_count > 0 %}
+        <form
+          class="feature-toolbar"
+          method="get"
+          action="{{ url_for('features.project_detail', project_id=project['id']) }}"
+        >
+          <input type="hidden" name="tab" value="ideas" />
+          <label
+            >Category
+            <select name="category" data-submit-on-change>
+              <option value="all" {{ 'selected' if category_filter == 'all' else '' }}>
+                All categories
+              </option>
+              <option value="none" {{ 'selected' if category_filter == 'none' else '' }}>
+                No category
+              </option>
+              {% for category in categories %}
+                <option
+                  value="{{ category['id'] }}"
+                  {{ 'selected' if category_filter|string == category['id']|string else '' }}
+                >
+                  {{ category['name'] }}
+                </option>
+              {% endfor %}
+            </select></label
+          >
+          <label>
+            Sort
+            <select name="sort" data-submit-on-change>
+              <option value="newest" {{ 'selected' if sort == 'newest' else '' }}>
+                Newest first
+              </option>
+              <option value="oldest" {{ 'selected' if sort == 'oldest' else '' }}>
+                Oldest first
+              </option>
+            </select>
+          </label>
+          {% if category_filter != "all" %}
+            <a
+              class="text-action"
+              href="{{ url_for('features.project_detail', project_id=project['id']) }}"
+              >Clear filters</a
+            >
+          {% endif %}
+        </form>
+      {% endif %}
+      {% if ideas %}
+        <section class="idea-list" aria-label="Ideas in this project">
+          {% for idea in ideas %}
+            <article class="feature-card idea-card">
+              <div class="idea-card-content">
+                <div class="idea-title-row">
+                  <h2>{{ idea['title'] }}</h2>
+                  {% if idea["category_name"] %}
+                    <span class="category-chip">{{ idea['category_name'] }}</span>
+                  {% endif %}
+                </div>
+                {% if idea["content"] %}<p class="idea-body">{{ idea['content'] }}</p>{% endif %}
+                {% if idea["tags"] %}
+                  <div class="tag-list">
+                    {% for tag in idea['tags'] %}
+                      <span class="tag-chip">#{{ tag['name'] }}</span>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+                <span class="feature-muted"
+                  >Added {{ idea['created_at'][:10] if idea['created_at'] else '' }}</span
+                >
+              </div>
+              <div class="idea-actions">
+                <a
+                  class="icon-action"
+                  href="{{ url_for('features.edit_idea', idea_id=idea['id']) }}"
+                  aria-label="Edit {{ idea['title'] }}"
+                  title="Edit"
+                  ><i class="ri-edit-line"></i
+                ></a>
+                <form
+                  method="post"
+                  action="{{ url_for('features.delete_idea', idea_id=idea['id']) }}"
+                  data-confirm="Permanently delete this idea? This cannot be undone."
+                >
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token }}" /><input
+                    type="hidden"
+                    name="next"
+                    value="project"
+                  /><button
+                    class="icon-action danger-text"
+                    type="submit"
+                    aria-label="Delete {{ idea['title'] }}"
+                    title="Delete"
+                  >
+                    <i class="ri-delete-bin-line"></i>
+                  </button>
+                </form>
+              </div>
+            </article>
+          {% endfor %}
+        </section>
+      {% else %}
+        <section class="feature-empty-state">
+          <div class="empty-art"><i class="ri-lightbulb-flash-line"></i></div>
+          <h2>
+            {% if total_idea_count %}
+              No ideas match this category.
+            {% else %}
+              This project has no ideas yet.
+            {% endif %}
+          </h2>
+          <p>
+            {% if total_idea_count %}
+              Clear the category filter to see all ideas in this project.
+            {% else %}
+              Add your first idea to start building this project.
+            {% endif %}
+          </p>
+          {% if total_idea_count %}
+            <a
+              class="feature-button feature-button-secondary"
+              href="{{ url_for('features.project_detail', project_id=project['id']) }}"
+              >Clear filter</a
+            >
+          {% else %}
+            <button class="feature-button" type="button" data-dialog-open="add-idea-dialog">
+              <i class="ri-add-line"></i> Add Idea
+            </button>
+          {% endif %}
+        </section>
+      {% endif %}
+    {% else %}
+      <section class="graph-panel feature-card">
+        <div class="graph-panel-heading">
+          <div>
+            <h2>Creative connections</h2>
+            <p>Explore the ideas in this project and the links between them.</p>
+          </div>
+          <div class="graph-header-actions">
+            <span class="graph-count"
+              >{{ total_idea_count }} nodes · {{ graph_edges|length }} connections</span
+            >
+          </div>
+        </div>
+        {% if total_idea_count %}
+          <div class="graph-canvas-wrap">
+            <svg
+              id="idea-graph"
+              role="img"
+              aria-label="Interactive graph of this project's ideas"
+              viewBox="0 0 900 520"
+              preserveAspectRatio="xMidYMid meet"
+            ></svg>
+            <div class="graph-ctrl" role="toolbar" aria-label="Graph controls">
+              <button type="button" id="graph-zoom-in" aria-label="Zoom in" title="Zoom in">
+                +</button
+              ><button type="button" id="graph-zoom-out" aria-label="Zoom out" title="Zoom out">
+                −</button
+              ><button
+                type="button"
+                id="graph-fit"
+                aria-label="Fit graph to screen"
+                title="Fit graph"
+              >
+                Fit</button
+              ><button
+                type="button"
+                id="graph-fullscreen"
+                aria-label="Full screen"
+                title="Full screen"
+              >
+                <i class="ri-fullscreen-line"></i>
+              </button>
+            </div>
+            <div class="graph-legend">
+              <span>PROJECT</span
+              ><strong title="{{ project['name'] }}">{{ project['name'] }}</strong>
+            </div>
+            <aside class="graph-edge-details" id="graph-edge-details" hidden>
+              <p class="graph-edge-details-title" id="graph-edge-details-title"></p>
+              <p class="graph-edge-details-body" id="graph-edge-details-body"></p>
+              <button type="button" class="graph-edge-details-close" id="graph-edge-details-close">
+                Close
+              </button>
+            </aside>
+          </div>
+          <p class="graph-hint">
+            Select a connection line to read its note. Select an idea to open it in a new tab. Drag
+            an idea to move it, drag the background to pan, or use the controls, wheel or pinch to
+            zoom.
+          </p>
+        {% else %}
+          <div class="feature-empty-state graph-empty">
+            <div class="empty-art"><i class="ri-node-tree"></i></div>
+            <h2>No ideas to graph yet.</h2>
+            <p>Create ideas in this project and they will appear here.</p>
+            <a
+              class="feature-button"
+              href="{{ url_for('features.project_detail', project_id=project['id'], tab='ideas') }}"
+              >Go to Ideas</a
+            >
+          </div>
+        {% endif %}
+      </section>
+      {% if total_idea_count > 1 %}
+        <section class="feature-card connection-manager">
+          <div class="section-heading-row">
+            <div>
+              <h2>Connections</h2>
+              <p>Connect two ideas in this project and explain why they relate.</p>
+            </div>
+          </div>
+          <form
+            class="connection-create-form"
+            method="post"
+            action="{{ url_for('features.create_connection', project_id=project['id']) }}"
+          >
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}" /><label
+              >First idea<select name="idea_a" required>
+                <option value="">Choose an idea</option>
+                {% for idea in all_ideas %}
+                  <option value="{{ idea['id'] }}">{{ idea['title'] }}</option>
+                {% endfor %}
+              </select></label
+            ><label
+              >Related idea<select name="idea_b" required>
+                <option value="">Choose an idea</option>
+                {% for idea in all_ideas %}
+                  <option value="{{ idea['id'] }}">{{ idea['title'] }}</option>
+                {% endfor %}
+              </select></label
+            ><label class="connection-description-field"
+              >Why are they related?
+              <input
+                name="description"
+                type="text"
+                maxlength="1000"
+                placeholder="Optional connection note" /></label
+            ><button class="feature-button" type="submit">
+              <i class="ri-links-line"></i> Connect ideas
+            </button>
+          </form>
+          {% if graph_edges %}
+            <div class="connection-list">
+              {% for edge in graph_edges %}
+                <article class="connection-row">
+                  <div class="connection-names">
+                    <strong>{{ edge['title_a'] }}</strong><i class="ri-arrow-left-right-line"></i
+                    ><strong>{{ edge['title_b'] }}</strong>{% if edge["description"] %}
+                      <p>{{ edge['description'] }}</p>
+                    {% else %}
+                      <p class="feature-muted">No description added.</p>
+                    {% endif %}
+                  </div>
+                  <div class="connection-row-actions">
+                    <form
+                      class="connection-edit-form"
+                      method="post"
+                      action="{{ url_for('features.edit_connection', connection_id=edge['id']) }}"
+                    >
+                      <input type="hidden" name="csrf_token" value="{{ csrf_token }}" /><input
+                        aria-label="Connection description"
+                        name="description"
+                        value="{{ edge['description'] }}"
+                        maxlength="1000"
+                        placeholder="Edit relationship note"
+                      /><button class="small-button" type="submit">Save</button>
+                    </form>
+                    <form
+                      method="post"
+                      action="{{ url_for('features.delete_connection', connection_id=edge['id']) }}"
+                      data-confirm="Delete this connection?"
+                    >
+                      <input type="hidden" name="csrf_token" value="{{ csrf_token }}" /><button
+                        class="icon-action danger-text"
+                        aria-label="Delete connection"
+                        type="submit"
+                      >
+                        <i class="ri-delete-bin-line"></i>
+                      </button>
+                    </form>
+                  </div>
+                </article>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p class="feature-empty-inline">
+              No connections yet. Connect two ideas to create your first link.
+            </p>
+          {% endif %}
+        </section>
+      {% endif %}
+    {% endif %}
+  </div>
+  <dialog class="feature-dialog" id="rename-project-dialog">
+    <form
+      method="post"
+      action="{{ url_for('features.rename_project', project_id=project['id']) }}"
+      class="feature-dialog-form"
+    >
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}" /><input
+        type="hidden"
+        name="source"
+        value="detail"
+      /><button class="dialog-x" type="button" data-dialog-close aria-label="Close">×</button>
+      <p class="feature-eyebrow">PROJECT SETTINGS</p>
+      <h2>Rename project</h2>
+      <label for="rename-project-name">PROJECT NAME</label
+      ><input
+        id="rename-project-name"
+        name="name"
+        maxlength="100"
+        value="{{ project['name'] }}"
+        required
+      />
+      <div class="dialog-actions">
+        <button class="feature-button feature-button-secondary" type="button" data-dialog-close>
+          Cancel</button
+        ><button class="feature-button" type="submit">Save</button>
+      </div>
+    </form>
+  </dialog>
+  <dialog class="feature-dialog" id="delete-project-dialog">
+    <form
+      method="post"
+      action="{{ url_for('features.delete_project', project_id=project['id']) }}"
+      class="feature-dialog-form"
+    >
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}" /><input
+        type="hidden"
+        name="source"
+        value="detail"
+      /><button class="dialog-x" type="button" data-dialog-close aria-label="Close">×</button>
+      <p class="feature-eyebrow danger-text">PLEASE CONFIRM</p>
+      <h2>Delete this project?</h2>
+      <p>
+        “{{ project['name'] }}” will be deleted. Its ideas will be kept and moved to Unorganised
+        Ideas.
+      </p>
+      <div class="dialog-actions">
+        <button class="feature-button feature-button-secondary" type="button" data-dialog-close>
+          Cancel</button
+        ><button class="feature-button feature-button-danger" type="submit">Delete project</button>
+      </div>
+    </form>
+  </dialog>
+  <dialog class="feature-dialog idea-form-dialog" id="add-idea-dialog">
+    <form
+      method="post"
+      action="{{ url_for('features.add_project_idea', project_id=project['id']) }}"
+      class="feature-dialog-form"
+    >
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}" /><button
+        class="dialog-x"
+        type="button"
+        data-dialog-close
+        aria-label="Close"
+      >
+        ×
+      </button>
+      <p class="feature-eyebrow">ADD TO {{ project['name']|upper }}</p>
+      <h2>Add Idea</h2>
+      <div class="feature-form-field">
+        <label for="idea-title">Title</label
+        ><input
+          id="idea-title"
+          name="title"
+          type="text"
+          maxlength="120"
+          placeholder="Give your idea a title"
+        />
+      </div>
+      <div class="feature-form-field">
+        <label for="idea-content">Your idea</label
+        ><textarea
+          id="idea-content"
+          name="content"
+          rows="5"
+          maxlength="12000"
+          placeholder="Write down the thought behind this idea..."
+        ></textarea>
+      </div>
+      <div class="feature-form-grid">
+        <div class="feature-form-field">
+          <label for="idea-category">Category</label
+          ><select id="idea-category" name="category_id">
+            <option value="">No category</option>
+            {% for category in categories %}
+              <option value="{{ category['id'] }}">{{ category['name'] }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="feature-form-field">
+          <label for="idea-tags">Tags</label
+          ><input id="idea-tags" name="tags" placeholder="story, character, draft" />
+        </div>
+      </div>
+      <p class="field-help">Separate tags with commas. Enter a title or idea content.</p>
+      <div class="dialog-actions">
+        <button type="button" class="feature-button feature-button-secondary" data-dialog-close>
+          Cancel</button
+        ><button class="feature-button" type="submit">Save idea</button>
+      </div>
+    </form>
+  </dialog>
+  {% if tab == "graph" and total_idea_count %}
+    {# prettier-ignore-start #}
+        <script id="graph-data"
+                type="application/json">{{ {'nodes': graph_nodes, 'edges': graph_edges}|tojson }}</script>
+        {# prettier-ignore-end #}
+    <script src="{{ url_for('static', filename='JS/graph.js') }}" defer></script>
+  {% endif %}
+{% endblock %}

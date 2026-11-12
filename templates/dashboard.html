@@ -1,0 +1,205 @@
+{% extends "app_base.html" %}
+{% block title %}
+  Dashboard - JO! THE HELPER
+{% endblock %}
+{% block app_content %}
+  <section class="greeting-section">
+    <div class="greeting-content">
+      <h1>
+        <span id="greeting-word">GOOD EVENING,</span>
+        <span class="greeting-name">{{ current_user["name"] }}</span>
+      </h1>
+      <p class="current-date" id="current-date"></p>
+      <p class="greeting-subtitle">What's on your mind today?</p>
+    </div>
+    <div class="greeting-image-wrapper">
+      <img
+        src="{{ url_for('static', filename='images/boy.png') }}"
+        alt="Person working at a desk"
+        class="greeting-image"
+      />
+    </div>
+  </section>
+  <section class="hero-section">
+    <div class="hero-image-wrapper">
+      <img
+        src="{{ url_for('static', filename='images/Cozy Study and Sleeping Cat Stickers.png') }}"
+        alt="Sleeping cat on books"
+        class="hero-image"
+      />
+    </div>
+    <div class="hero-content">
+      <div class="section-label hero-label">YOUR CREATIVE SPACE</div>
+      <h2>Where little thoughts become ideas.</h2>
+      <p class="hero-tagline">Dream. Draft. Develop.</p>
+    </div>
+    <a href="{{ url_for('features.quick_idea') }}" class="capture-button">
+      <i class="ri-add-line" aria-hidden="true"></i>
+      <span>Capture an idea</span>
+    </a>
+  </section>
+  <section class="overview-section">
+    <div class="overview-card">
+      <div class="overview-number">{{ counts['projects'] }}</div>
+      <div class="overview-label">Total Projects</div>
+    </div>
+    <div class="overview-card">
+      <div class="overview-number">{{ counts['ideas'] }}</div>
+      <div class="overview-label">Total Ideas</div>
+    </div>
+    <div class="overview-card">
+      <div class="overview-number">{{ counts['unorganised'] }}</div>
+      <div class="overview-label">Total Unorganised Ideas</div>
+    </div>
+  </section>
+  <section class="dashboard-section sticky-notes-section">
+    <h2 class="section-heading">Reminder Notes</h2>
+    <form
+      class="note-input-row"
+      method="post"
+      action="{{ url_for('features.create_note') }}"
+      data-ajax-note-create
+      data-note-edit-url-template="{{ url_for('features.edit_note', note_id=0) }}"
+      data-note-delete-url-template="{{ url_for('features.delete_note', note_id=0) }}"
+    >
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+      <textarea
+        name="content"
+        maxlength="1000"
+        placeholder="Write something you want to remember when you come back..."
+        aria-label="Write a reminder note"
+        required
+      ></textarea>
+      <button type="submit" class="primary-button">
+        <i class="ri-add-line" aria-hidden="true"></i>
+        <span>Add note</span>
+      </button>
+    </form>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div aria-live="polite">
+          {% for category, message in messages %}
+            <div class="dashboard-flash">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+    <div class="dashboard-flash" data-note-feedback aria-live="polite" hidden></div>
+  </section>
+  <div class="dashboard-scroll">
+    {% if not notes %}
+      <div class="empty-state">
+        <h3>~ No reminder notes yet ~</h3>
+        <p>Leave yourself a note above, and it will be waiting for you next time</p>
+      </div>
+    {% else %}
+      <div class="dashboard-notes-list" aria-label="Saved reminder notes">
+        <div class="dashboard-notes-grid">
+          {% for note in notes %}
+            <article class="dashboard-sticky-note {{ note['color']|note_color_class }}">
+              <p class="dashboard-sticky-note-content">{{ note['content'] }}</p>
+              <div class="dashboard-sticky-note-footer">
+                <time
+                  class="dashboard-sticky-note-date"
+                  datetime="{{ note['created_at']|replace(' ', 'T') }}"
+                  >{{ note['created_at']|note_date }}</time
+                >
+                <div class="dashboard-sticky-note-actions">
+                  <button
+                    class="dashboard-sticky-note-edit-trigger"
+                    type="button"
+                    data-dialog-open="note-edit-dialog-{{ note['id'] }}"
+                    aria-label="Edit reminder note"
+                  >
+                    <i class="ri-edit-line" aria-hidden="true"></i>
+                    <span>Edit</span>
+                  </button>
+                  <form
+                    method="post"
+                    action="{{ url_for('features.delete_note', note_id=note['id']) }}"
+                    data-confirm="Are you sure you want to permanently delete this reminder note? This action cannot be undone."
+                    data-confirm-title="Delete reminder note?"
+                    data-confirm-action="Delete note"
+                  >
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+                    <button
+                      class="dashboard-sticky-note-delete"
+                      type="submit"
+                      aria-label="Delete reminder note"
+                    >
+                      <i class="ri-delete-bin-line" aria-hidden="true"></i>
+                      <span>Delete</span>
+                    </button>
+                  </form>
+                </div>
+              </div>
+              <dialog
+                class="feature-dialog dashboard-note-dialog"
+                id="note-edit-dialog-{{ note['id'] }}"
+                aria-labelledby="note-edit-title-{{ note['id'] }}"
+              >
+                <form
+                  method="post"
+                  action="{{ url_for('features.edit_note', note_id=note['id']) }}"
+                  class="feature-dialog-form dashboard-note-edit-form"
+                >
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+                  <button
+                    class="dialog-x"
+                    type="button"
+                    data-dialog-close
+                    aria-label="Close reminder note editor"
+                  >
+                    ×
+                  </button>
+                  <p class="feature-eyebrow">EDIT REMINDER NOTE</p>
+                  <h2 id="note-edit-title-{{ note['id'] }}">Edit reminder note</h2>
+                  <div class="feature-form-field">
+                    <label for="note-edit-{{ note['id'] }}">Reminder note</label>
+                    {# prettier-ignore-start #}
+                    <textarea
+                      id="note-edit-{{ note['id'] }}"
+                      name="content"
+                      rows="5"
+                      maxlength="1000"
+                      required>{{ note['content'] }}</textarea>
+                    {# prettier-ignore-end #}
+                  </div>
+                  <div class="dialog-actions">
+                    <button
+                      type="button"
+                      class="feature-button feature-button-secondary"
+                      data-dialog-close
+                    >
+                      Cancel
+                    </button>
+                    <button class="feature-button" type="submit">Save changes</button>
+                  </div>
+                </form>
+              </dialog>
+            </article>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+    <section class="connections-section">
+      <div class="connections-content">
+        <div class="section-label connections-label">
+          <i class="ri-node-tree" aria-hidden="true"></i>
+          <span>CREATIVE CONNECTIONS</span>
+        </div>
+        <h2>Great things are done by a series of small things brought together</h2>
+      </div>
+      <div class="connection-illustration">
+        <span class="connection-node node-one"></span>
+        <span class="connection-node node-two"></span>
+        <span class="connection-node node-three"></span>
+        <span class="connection-node node-four"></span>
+        <span class="connection-line line-one"></span>
+        <span class="connection-line line-two"></span>
+        <span class="connection-line line-three"></span>
+      </div>
+    </section>
+  </div>
+  <script src="{{ url_for('static', filename='JS/dashboard.js') }}"></script>
+{% endblock %}

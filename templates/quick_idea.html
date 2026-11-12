@@ -1,0 +1,52 @@
+{% extends "app_base.html" %}
+{% block title %}Quick Idea - JO! THE HELPER{% endblock %}
+{% block app_content %}
+  <div class="feature-page narrow-feature-page">
+    {% include "feature_flash.html" %}
+    <header class="feature-page-header">
+      <div>
+        <p class="feature-eyebrow">FAST CAPTURE</p>
+        <h1>Quick Idea</h1>
+        <p class="feature-lead">Save a thought now. Organize it whenever you like.</p>
+      </div>
+    </header>
+    <section class="feature-card quick-idea-card">
+      <form method="post" action="{{ url_for('features.quick_idea') }}" class="feature-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+        <div class="feature-form-field">
+          <label for="quick-idea-content">Your idea</label
+          ><textarea
+            id="quick-idea-content"
+            name="content"
+            rows="8"
+            maxlength="12000"
+            placeholder="Write your thought here..."
+            required
+            autofocus
+          ></textarea
+          ><span class="field-help"
+            >Your first line becomes the idea title. You can edit the title later.</span
+          >
+        </div>
+        <div class="feature-form-field">
+          <label for="quick-idea-project">Project (optional)</label
+          ><select id="quick-idea-project" name="project_id">
+            <option value="">No project — organize later</option>
+            {% for project in projects %}
+              <option value="{{ project['id'] }}">{{ project['name'] }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="feature-form-actions">
+          <a
+            class="feature-button feature-button-secondary"
+            href="{{ url_for('features.unorganised_ideas') }}"
+            >Cancel</a
+          ><button type="submit" class="feature-button">
+            <i class="ri-save-line"></i> Save idea
+          </button>
+        </div>
+      </form>
+    </section>
+  </div>
+{% endblock %}

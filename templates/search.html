@@ -1,0 +1,153 @@
+{% extends "app_base.html" %}
+{% block title %}Search - JO! THE HELPER{% endblock %}
+{% block app_content %}
+  <div class="feature-page">
+    {% include "feature_flash.html" %}
+    <header class="feature-page-header">
+      <div>
+        <p class="feature-eyebrow">FIND A THOUGHT AGAIN</p>
+        <h1>Search</h1>
+        <p class="feature-lead">Search your ideas, tags and projects from one place.</p>
+      </div>
+    </header>
+    <section class="feature-card global-search-card">
+      <form method="get" action="{{ url_for('features.search') }}" class="global-search-form">
+        <label class="global-search-input-wrap" for="global-query"
+          ><i class="ri-search-line" aria-hidden="true"></i
+          ><input
+            id="global-query"
+            name="q"
+            value="{{ query }}"
+            maxlength="200"
+            placeholder="Search ideas, tags and projects..."
+            autocomplete="off" /></label
+        ><button class="feature-button" type="submit">Search</button>{% if query %}
+          <a class="feature-button feature-button-secondary" href="{{ url_for('features.search') }}"
+            >Clear</a
+          >
+        {% endif %}
+      </form>
+    </section>
+    {% if query %}
+      <div class="feature-toolbar search-results-toolbar">
+        <span>Results for <strong>“{{ query }}”</strong></span>
+        <form method="get" action="{{ url_for('features.search') }}">
+          <input type="hidden" name="q" value="{{ query }}" /><label
+            >Sort
+            <select name="sort" data-submit-on-change>
+              <option value="newest" {{ 'selected' if sort == 'newest' else '' }}>
+                Newest first
+              </option>
+              <option value="oldest" {{ 'selected' if sort == 'oldest' else '' }}>
+                Oldest first
+              </option>
+            </select>
+          </label>
+        </form>
+      </div>
+      {% if project_results %}
+        <section class="search-result-section">
+          <h2>Projects <span>{{ project_results|length }}</span></h2>
+          <div class="feature-grid search-project-grid">
+            {% for project in project_results %}
+              <a
+                class="feature-card search-project-card"
+                href="{{ url_for('features.project_detail', project_id=project['id']) }}"
+                ><span class="feature-card-icon"><i class="ri-folder-3-line"></i></span>
+                <div>
+                  <strong>{{ project['name'] }}</strong>
+                  <p>
+                    {{ project['idea_count'] }}
+                    {{ 'idea' if project['idea_count'] == 1 else 'ideas' }}
+                  </p>
+                </div>
+                <i class="ri-arrow-right-line"></i
+              ></a>
+            {% endfor %}
+          </div>
+        </section>
+      {% endif %}
+      <section class="search-result-section">
+        <h2>Ideas <span>{{ ideas|length }}</span></h2>
+        {% if ideas %}
+          <div class="idea-list">
+            {% for idea in ideas %}
+              <article class="feature-card idea-card">
+                <a
+                  class="idea-card-content search-result-link"
+                  href="{{ url_for('features.project_detail', project_id=idea['project_id']) if idea['project_id'] else url_for('features.unorganised_ideas') }}"
+                  ><h3>{{ idea['title'] }}</h3>
+                  {% if idea["content"] %}
+                    <p class="idea-body">{{ idea['content']|truncate(220) }}</p>
+                  {% endif %}
+                  <div class="search-meta">
+                    {% if idea["project_name"] %}
+                      <span><i class="ri-folder-3-line"></i> {{ idea['project_name'] }}</span>
+                    {% else %}
+                      <span><i class="ri-inbox-archive-line"></i> Unorganised Idea</span>
+                    {% endif %}{% if idea["category_name"] %}
+                      <span class="category-chip">{{ idea['category_name'] }}</span>
+                    {% endif %}
+                  </div>
+                  {% if idea["tags"] %}
+                    <div class="tag-list">
+                      {% for tag in idea['tags'] %}
+                        <span class="tag-chip">#{{ tag['name'] }}</span>
+                      {% endfor %}
+                    </div>
+                  {% endif %}<span class="feature-muted"
+                    >{{ idea['created_at'][:10] if idea['created_at'] else '' }}</span
+                  ></a
+                >
+                <div class="idea-actions">
+                  <a
+                    class="icon-action"
+                    href="{{ url_for('features.edit_idea', idea_id=idea['id']) }}"
+                    title="Edit idea"
+                    aria-label="Edit idea"
+                    ><i class="ri-edit-line"></i
+                  ></a>
+                  <form
+                    method="post"
+                    action="{{ url_for('features.delete_idea', idea_id=idea['id']) }}"
+                    data-confirm="Permanently delete this idea? This cannot be undone."
+                  >
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}" /><input
+                      type="hidden"
+                      name="next"
+                      value="search"
+                    /><button
+                      class="icon-action danger-text"
+                      type="submit"
+                      title="Delete idea"
+                      aria-label="Delete idea"
+                    >
+                      <i class="ri-delete-bin-line"></i>
+                    </button>
+                  </form>
+                </div>
+              </article>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="feature-empty-inline">No ideas matched this search.</div>
+        {% endif %}
+      </section>
+      {% if not project_results and not ideas %}
+        <section class="feature-empty-state search-empty">
+          <div class="empty-art"><i class="ri-search-eye-line"></i></div>
+          <h2>No matching results</h2>
+          <p>
+            Try a different word or tag. Search checks idea titles, content, tags and project names.
+          </p>
+        </section>
+      {% endif %}
+    {% else %}
+      <section class="feature-empty-state search-empty">
+        <div class="empty-art"><i class="ri-search-line"></i></div>
+        <h2>What are you looking for?</h2>
+        <p>Enter a word, idea title, tag or project name to find it across your workspace.</p>
+      </section>
+    {% endif %}
+  </div>
+{% endblock %}

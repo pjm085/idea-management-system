@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}
+  {{ error_title }}
+  - JO! THE HELPER
+{% endblock %}
+{% block content %}
+  <div class="auth-page error-page">
+    <div class="error-card">
+      <p class="error-eyebrow">JO! THE HELPER</p>
+      <p class="error-code">{{ error_code }}</p>
+      <h1>{{ error_title }}</h1>
+      <p>{{ error_message }}</p>
+      <a class="auth-button error-home-link" href="{{ url_for('home') }}"
+        >Return to JO! THE HELPER</a
+      >
+    </div>
+  </div>
+{% endblock %}
