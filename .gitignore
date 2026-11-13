@@ -1,10 +1,40 @@
+# Python runtime files
 __pycache__/
 *.py[cod]
+*$py.class
+
+# Virtual environments
 .venv/
+venv/
+env/
+
+# Local configuration and secrets
 .env
 .env.*
+!.env.example
+!.env.template
+*.key
+*.pem
+*.p12
+*.pfx
+
+# Application instance data
+instance/
+
+# Databases, logs, and temporary files
 *.db
 *.db-*
 *.sqlite
 *.sqlite3
-instance/
+*.sqlite-*
+*.sqlite3-*
+*.log
+*.log.*
+*.tmp
+*.temp
+*.swp
+*.swo
+
+# Operating-system files
+.DS_Store
+Thumbs.db
